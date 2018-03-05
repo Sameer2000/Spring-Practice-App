@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<sec:http entry-point-ref="authenticationEntryPoint" create-session="stateless">
+	    <sec:intercept-url pattern="/" access="permitAll" />
+		<sec:intercept-url pattern="/rest/**" access="isAuthenticated()" />
+		<!-- <sec:custom-filter ref="authenticationTokenFilter"  before="FORM_LOGIN_FILTER" /> -->
+		<sec:access-denied-handler ref="customAccessDeniedHandler" />
+		<sec:csrf disabled="true" />
+		<sec:http-basic  />
+		<sec:headers  disabled="true">
+			<sec:cache-control disabled="true" />
+		</sec:headers>
+		
+		<sec:logout />
+	</sec:http>
+	
+		<bean id="customAccessDeniedHandler" class="com.app.src.security.AccessDeniedHandlerImpl"></bean>
+		<!-- <bean id="authenticationTokenFilter" class="com.mfg.quality.security.CustomAuthenticationTokenFilter"></bean> -->
+		<bean id="authenticationEntryPoint" class="com.app.src.security.AuthenticationEntryPointImpl"></bean>
+		<bean id="userDetailsServiceImpl" class="com.app.src.service.UserDetailsServiceImpl" />
+		
+		<sec:authentication-manager alias="authenticationManager">
+			<sec:authentication-provider user-service-ref="userDetailsServiceImpl"></sec:authentication-provider>
+		</sec:authentication-manager>
+	
+    	<!-- Enable the annotations for defining the secure role -->
+    	<sec:global-method-security secured-annotations="enabled" />
+		
+		
+</beans>
